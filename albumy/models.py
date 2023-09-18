@@ -223,7 +223,7 @@ tagging = db.Table('tagging',
                    )
 
 
-@whooshee.register_model('description')
+@whooshee.register_model('description', 'alt_text')
 class Photo(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     description = db.Column(db.String(500))
@@ -234,11 +234,13 @@ class Photo(db.Model):
     can_comment = db.Column(db.Boolean, default=True)
     flag = db.Column(db.Integer, default=0)
     author_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    alt_text = db.Column(db.String(500))
 
     author = db.relationship('User', back_populates='photos')
     comments = db.relationship('Comment', back_populates='photo', cascade='all')
     collectors = db.relationship('Collect', back_populates='collected', cascade='all')
     tags = db.relationship('Tag', secondary=tagging, back_populates='photos')
+
 
 
 @whooshee.register_model('name')

@@ -104,3 +104,7 @@ def flash_errors(form):
                 getattr(form, field).label.text,
                 error
             ))
+
+
+def generate_alt_text(filename): 
+    return "my lovely AI generated alt text!"

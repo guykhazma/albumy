@@ -81,6 +81,7 @@ def fake_photo(count=30):
 
         photo = Photo(
             description=fake.text(),
+            alt_text=fake.text(80),
             filename=filename,
             filename_m=filename,
             filename_s=filename,

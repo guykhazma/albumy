@@ -17,7 +17,7 @@ from albumy.extensions import db
 from albumy.forms.main import DescriptionForm, TagForm, CommentForm
 from albumy.models import User, Photo, Tag, Follow, Collect, Comment, Notification
 from albumy.notifications import push_comment_notification, push_collect_notification
-from albumy.utils import rename_image, resize_image, redirect_back, flash_errors
+from albumy.utils import rename_image, resize_image, redirect_back, flash_errors, generate_alt_text
 
 main_bp = Blueprint('main', __name__)
 
@@ -125,11 +125,13 @@ def upload():
         f.save(os.path.join(current_app.config['ALBUMY_UPLOAD_PATH'], filename))
         filename_s = resize_image(f, filename, current_app.config['ALBUMY_PHOTO_SIZE']['small'])
         filename_m = resize_image(f, filename, current_app.config['ALBUMY_PHOTO_SIZE']['medium'])
+        alt = generate_alt_text(filename)
         photo = Photo(
             filename=filename,
             filename_s=filename_s,
             filename_m=filename_m,
-            author=current_user._get_current_object()
+            author=current_user._get_current_object(),
+            alt_text=alt
         )
         db.session.add(photo)
         db.session.commit()
