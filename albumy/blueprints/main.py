@@ -134,7 +134,6 @@ def upload():
             filename_s=filename_s,
             filename_m=filename_m,
             author=current_user._get_current_object(),
-            description=caption
             alt_text=alt
         )
         db.session.add(photo)
