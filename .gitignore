@@ -113,6 +113,3 @@ uploads/avatars/*
 !uploads/avatars/.gitkeep
 
 whooshee
-
-# ignore azure config file
-azure_env.sh
