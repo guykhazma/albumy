@@ -105,6 +105,3 @@ def flash_errors(form):
                 error
             ))
 
-
-def generate_alt_text(filename): 
-    return "my lovely AI generated alt text!"
