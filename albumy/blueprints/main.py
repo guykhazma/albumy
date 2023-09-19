@@ -15,14 +15,14 @@ from sqlalchemy.sql.expression import func
 from albumy.decorators import confirm_required, permission_required
 from albumy.extensions import db
 from albumy.forms.main import DescriptionForm, TagForm, CommentForm
-from albumy.ml import MLCapabilities
+from albumy.ml import MLService
 from albumy.models import User, Photo, Tag, Follow, Collect, Comment, Notification
 from albumy.notifications import push_comment_notification, push_collect_notification
 from albumy.utils import rename_image, resize_image, redirect_back, flash_errors
 
 main_bp = Blueprint('main', __name__)
 
-ml_capabilities = MLCapabilities()
+ml_capabilities = MLService.get_ml_service("azure")
 
 @main_bp.route('/')
 def index():
@@ -140,7 +140,7 @@ def upload():
         db.session.commit()
 
         # Add tags using object recognition
-        generated_tags = ml_capabilities.generate_tags(file_path)
+        generated_tags = ml_capabilities.generate_tags(file_path, max_tags=10)
         # add tags
         for generated_tag in generated_tags:
             # TODO: can also filter by confidence
