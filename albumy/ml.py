@@ -1,4 +1,5 @@
 import os
+import logging
 from typing import List
 from abc import ABC, abstractmethod
 
@@ -41,20 +42,27 @@ class AzureMLCapabilities(MLCapabilities):
         self.computervision_client = ComputerVisionClient(endpoint, CognitiveServicesCredentials(subscription_key))
 
     def generate_caption(self, file_path):
-        with open(file_path, "rb") as image:
-            res = self.computervision_client.describe_image_in_stream(image, max_candidates=1, language="en").captions[0].text
+        res = ""
+        try:
+            with open(file_path, "rb") as image:
+                res = self.computervision_client.describe_image_in_stream(image, max_candidates=1, language="en").captions[0].text
+        except Exception as e:
+            logging.error("Failed to open image, falling back to empty caption")
+            logging.error(e)
         return res
     
     def generate_tags(self, file_path, max_tags):
         res = []
-        with open(file_path, "rb") as image:
-            tags_result_remote = self.computervision_client.tag_image_in_stream(image)
-            res = tags_result_remote.tags
-        if len(res) == 0:
-            return []
-        else:
-            # return the top tags by confidence
-            return [tag.name for tag in tags_result_remote.tags[:max_tags]]
+        try:
+            with open(file_path, "rb") as image:
+                tags_result_remote = self.computervision_client.tag_image_in_stream(image)
+                res = tags_result_remote.tags
+                if len(res) > 0:
+                    res = [tag.name for tag in res[:max_tags]]
+        except Exception as e:
+            logging.error("Failed to open image, falling back to empty tags list")
+            logging.error(e)
+        return res
 
 class MLService():
     """
