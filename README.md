@@ -49,6 +49,18 @@ Test account:
 * email: `admin@helloflask.com`
 * password: `helloflask`
 
+## Testing
+
+To run the tests please use:
+```bash
+python -m unittest tests.<test_file_name>
+```
+
+For example to run the ml tests:
+```bash
+python -m unittest tests.test_ml
+```
+
 ## License
 
 This project is licensed under the MIT License (see the
