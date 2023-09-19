@@ -15,24 +15,14 @@ from sqlalchemy.sql.expression import func
 from albumy.decorators import confirm_required, permission_required
 from albumy.extensions import db
 from albumy.forms.main import DescriptionForm, TagForm, CommentForm
+from albumy.ml import MLCapabilities
 from albumy.models import User, Photo, Tag, Follow, Collect, Comment, Notification
 from albumy.notifications import push_comment_notification, push_collect_notification
 from albumy.utils import rename_image, resize_image, redirect_back, flash_errors
 
-from dotenv import load_dotenv
-
-from azure.cognitiveservices.vision.computervision import ComputerVisionClient
-from msrest.authentication import CognitiveServicesCredentials
-
 main_bp = Blueprint('main', __name__)
 
-# Authenticate against Azure API
-load_dotenv()  # take environment variables from .env.
-subscription_key = os.environ["VISION_KEY"]
-endpoint = os.environ["VISION_ENDPOINT"]
-
-computervision_client = ComputerVisionClient(endpoint, CognitiveServicesCredentials(subscription_key))
-
+ml_capabilities = MLCapabilities()
 
 @main_bp.route('/')
 def index():
@@ -139,7 +129,7 @@ def upload():
         filename_s = resize_image(f, filename, current_app.config['ALBUMY_PHOTO_SIZE']['small'])
         filename_m = resize_image(f, filename, current_app.config['ALBUMY_PHOTO_SIZE']['medium'])
         # Adding caption using describe image
-        caption = computervision_client.describe_image_in_stream(open(file_path, "rb"), max_candidates=1, language="en").captions[0].text
+        caption = ml_capabilities.get_caption(file_path)
         photo = Photo(
             filename=filename,
             filename_s=filename_s,
@@ -151,14 +141,14 @@ def upload():
         db.session.commit()
 
         # Add tags using object recognition
-        tags_result_remote = computervision_client.tag_image_in_stream(open(file_path, "rb"))
+        generated_tags = ml_capabilities.get_tags(file_path)
         # add tags
-        for generated_tag in tags_result_remote.tags:
+        for generated_tag in generated_tags:
             # TODO: can also filter by confidence
             # Add all new tags
-            tag = Tag.query.filter_by(name=generated_tag.name).first()
+            tag = Tag.query.filter_by(name=generated_tag).first()
             if tag is None:
-                tag = Tag(name=generated_tag.name)
+                tag = Tag(name=generated_tag)
                 db.session.add(tag)
             # add tag to photo
             photo.tags.append(tag)
