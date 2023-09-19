@@ -15,12 +15,13 @@ class MLCapabilities():
 
         self.computervision_client = ComputerVisionClient(endpoint, CognitiveServicesCredentials(subscription_key))
 
-    def get_caption(self, file_path):
+    def generate_caption(self, file_path):
         return self.computervision_client.describe_image_in_stream(open(file_path, "rb"), max_candidates=1, language="en").captions[0].text
     
-    def get_tags(self, file_path):
+    def generate_tags(self, file_path, max_tags=10):
         tags_result_remote = self.computervision_client.tag_image_in_stream(open(file_path, "rb"))
         if len(tags_result_remote.tags) == 0:
             return []
         else:
-            return [tag.name for tag in tags_result_remote.tags]
+            # return the top 5 by confidence
+            return [tag.name for tag in tags_result_remote.tags[:max_tags]]

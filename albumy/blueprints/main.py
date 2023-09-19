@@ -128,7 +128,7 @@ def upload():
         f.save(file_path)
         filename_s = resize_image(f, filename, current_app.config['ALBUMY_PHOTO_SIZE']['small'])
         filename_m = resize_image(f, filename, current_app.config['ALBUMY_PHOTO_SIZE']['medium'])
-        alt = ml_capabilities.get_caption(file_path)
+        alt = ml_capabilities.generate_caption(file_path)
         photo = Photo(
             filename=filename,
             filename_s=filename_s,
@@ -140,7 +140,7 @@ def upload():
         db.session.commit()
 
         # Add tags using object recognition
-        generated_tags = ml_capabilities.get_tags(file_path)
+        generated_tags = ml_capabilities.generate_tags(file_path)
         # add tags
         for generated_tag in generated_tags:
             # TODO: can also filter by confidence
