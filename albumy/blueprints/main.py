@@ -15,12 +15,14 @@ from sqlalchemy.sql.expression import func
 from albumy.decorators import confirm_required, permission_required
 from albumy.extensions import db
 from albumy.forms.main import DescriptionForm, TagForm, CommentForm
+from albumy.ml import MLCapabilities
 from albumy.models import User, Photo, Tag, Follow, Collect, Comment, Notification
 from albumy.notifications import push_comment_notification, push_collect_notification
 from albumy.utils import rename_image, resize_image, redirect_back, flash_errors
 
 main_bp = Blueprint('main', __name__)
 
+ml_capabilities = MLCapabilities()
 
 @main_bp.route('/')
 def index():
@@ -122,17 +124,35 @@ def upload():
     if request.method == 'POST' and 'file' in request.files:
         f = request.files.get('file')
         filename = rename_image(f.filename)
-        f.save(os.path.join(current_app.config['ALBUMY_UPLOAD_PATH'], filename))
+        file_path = os.path.join(current_app.config['ALBUMY_UPLOAD_PATH'], filename)
+        f.save(file_path)
         filename_s = resize_image(f, filename, current_app.config['ALBUMY_PHOTO_SIZE']['small'])
         filename_m = resize_image(f, filename, current_app.config['ALBUMY_PHOTO_SIZE']['medium'])
+        # Adding caption using describe image
+        caption = ml_capabilities.get_caption(file_path)
         photo = Photo(
             filename=filename,
             filename_s=filename_s,
             filename_m=filename_m,
-            author=current_user._get_current_object()
+            author=current_user._get_current_object(),
+            description=caption
         )
         db.session.add(photo)
         db.session.commit()
+
+        # Add tags using object recognition
+        generated_tags = ml_capabilities.get_tags(file_path)
+        # add tags
+        for generated_tag in generated_tags:
+            # TODO: can also filter by confidence
+            # Add all new tags
+            tag = Tag.query.filter_by(name=generated_tag).first()
+            if tag is None:
+                tag = Tag(name=generated_tag)
+                db.session.add(tag)
+            # add tag to photo
+            photo.tags.append(tag)
+            db.session.commit()
     return render_template('main/upload.html')
 
 
