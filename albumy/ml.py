@@ -23,5 +23,5 @@ class MLCapabilities():
         if len(tags_result_remote.tags) == 0:
             return []
         else:
-            # return the top 5 by confidence
+            # return the top tags by confidence
             return [tag.name for tag in tags_result_remote.tags[:max_tags]]
