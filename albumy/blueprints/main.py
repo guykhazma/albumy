@@ -22,6 +22,7 @@ from albumy.utils import rename_image, resize_image, redirect_back, flash_errors
 
 main_bp = Blueprint('main', __name__)
 
+# Instantiate the ML service
 ml_capabilities = MLService.get_ml_service("azure")
 
 @main_bp.route('/')

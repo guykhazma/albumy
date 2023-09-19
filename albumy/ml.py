@@ -27,6 +27,9 @@ class MLCapabilities(ABC):
         pass
 
 class AzureMLCapabilities(MLCapabilities):
+    """
+    An implementation of MLCapabilities using Azure Cognitive Services.
+    """
 
     def __init__(self):
         self.provider = "azure"
@@ -49,6 +52,10 @@ class AzureMLCapabilities(MLCapabilities):
             return [tag.name for tag in tags_result_remote.tags[:max_tags]]
 
 class MLService():
+    """
+    A factory class for creating ML services.
+    """
+    
     @staticmethod
     def get_ml_service(provider) -> MLCapabilities:
         if provider == "azure":
