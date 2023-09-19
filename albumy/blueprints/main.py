@@ -144,7 +144,6 @@ def upload():
         generated_tags = ml_capabilities.generate_tags(file_path, max_tags=10)
         # add tags
         for generated_tag in generated_tags:
-            # TODO: can also filter by confidence
             # Add all new tags
             tag = Tag.query.filter_by(name=generated_tag).first()
             if tag is None:
