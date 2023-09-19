@@ -28,6 +28,17 @@ or with Pipenv:
 $ pipenv install --dev
 $ pipenv shell
 ```
+
+## Set up Azure account
+
+1. Create a Computer Vision resource in Azure portal following [this guide](https://learn.microsoft.com/en-us/azure/ai-services/computer-vision/quickstarts-sdk/image-analysis-client-library?pivots=programming-language-python&tabs=linux%2Cvisual-studio)
+
+2. Find out your keys Go by going to the Azure portal. If the resource you created in the Prerequisites section deployed successfully, select Go to resource under Next Steps. You can find your key and endpoint under Resource Management in the Keys and Endpoint page. Example for a screenshot of the Keys and Endpoint page:
+
+![credentials](images/credentials.png)
+
+3. Set the `VISION_KEY` and `VISION_ENDPOINT` variables in [`.env`](.env) file to the values from your Azure account
+
 generate fake data then run:
 ```
 $ flask forge
