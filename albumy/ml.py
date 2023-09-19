@@ -41,11 +41,16 @@ class AzureMLCapabilities(MLCapabilities):
         self.computervision_client = ComputerVisionClient(endpoint, CognitiveServicesCredentials(subscription_key))
 
     def generate_caption(self, file_path):
-        return self.computervision_client.describe_image_in_stream(open(file_path, "rb"), max_candidates=1, language="en").captions[0].text
+        with open(file_path, "rb") as image:
+            res = self.computervision_client.describe_image_in_stream(image, max_candidates=1, language="en").captions[0].text
+        return res
     
     def generate_tags(self, file_path, max_tags):
-        tags_result_remote = self.computervision_client.tag_image_in_stream(open(file_path, "rb"))
-        if len(tags_result_remote.tags) == 0:
+        res = []
+        with open(file_path, "rb") as image:
+            tags_result_remote = self.computervision_client.tag_image_in_stream(image)
+            res = tags_result_remote.tags
+        if len(res) == 0:
             return []
         else:
             # return the top tags by confidence
@@ -55,7 +60,7 @@ class MLService():
     """
     A factory class for creating ML services.
     """
-    
+
     @staticmethod
     def get_ml_service(provider) -> MLCapabilities:
         if provider == "azure":

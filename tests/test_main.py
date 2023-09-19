@@ -120,11 +120,11 @@ class MainTestCase(BaseTestCase):
     def test_photo_next(self):
         user = User.query.get(1)
         photo2 = Photo(filename='test.jpg', filename_s='test_s.jpg', filename_m='test_m.jpg',
-                       description='Photo 2', author=user)
+                       description='Photo 2', author=user, alt_text='test alt text')
         photo3 = Photo(filename='test.jpg', filename_s='test_s.jpg', filename_m='test_m.jpg',
-                       description='Photo 3', author=user)
+                       description='Photo 3', author=user, alt_text='test alt text')
         photo4 = Photo(filename='test.jpg', filename_s='test_s.jpg', filename_m='test_m.jpg',
-                       description='Photo 4', author=user)
+                       description='Photo 4', author=user, alt_text='test alt text')
         db.session.add_all([photo2, photo3, photo4])
         db.session.commit()
 
@@ -147,11 +147,11 @@ class MainTestCase(BaseTestCase):
     def test_photo_prev(self):
         user = User.query.get(1)
         photo2 = Photo(filename='test.jpg', filename_s='test_s.jpg', filename_m='test_m.jpg',
-                       description='Photo 2', author=user)
+                       description='Photo 2', author=user, alt_text='test alt text')
         photo3 = Photo(filename='test.jpg', filename_s='test_s.jpg', filename_m='test_m.jpg',
-                       description='Photo 3', author=user)
+                       description='Photo 3', author=user, alt_text='test alt text')
         photo4 = Photo(filename='test.jpg', filename_s='test_s.jpg', filename_m='test_m.jpg',
-                       description='Photo 4', author=user)
+                       description='Photo 4', author=user, alt_text='test alt text')
         db.session.add_all([photo2, photo3, photo4])
         db.session.commit()
 
@@ -173,7 +173,7 @@ class MainTestCase(BaseTestCase):
 
     def test_collect(self):
         photo = Photo(filename='test.jpg', filename_s='test_s.jpg', filename_m='test_m.jpg',
-                      description='Photo 3', author=User.query.get(2))
+                      description='Photo 3', author=User.query.get(2), alt_text='test alt text')
         db.session.add(photo)
         db.session.commit()
         self.assertEqual(Photo.query.get(3).collectors, [])

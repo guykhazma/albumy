@@ -43,9 +43,9 @@ class BaseTestCase(unittest.TestCase):
         blocked_user.set_password('123')
 
         photo = Photo(filename='test.jpg', filename_s='test_s.jpg', filename_m='test_m.jpg',
-                      description='Photo 1', author=admin_user)
+                      description='Photo 1', author=admin_user, alt_text='test alt text')
         photo2 = Photo(filename='test2.jpg', filename_s='test_s2.jpg', filename_m='test_m2.jpg',
-                       description='Photo 2', author=normal_user)
+                       description='Photo 2', author=normal_user, alt_text='test alt text 2')
 
         comment = Comment(body='test comment body', photo=photo, author=normal_user)
         tag = Tag(name='test tag')
