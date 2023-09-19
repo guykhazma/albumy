@@ -148,6 +148,7 @@ def upload():
             description=caption
         )
         db.session.add(photo)
+        db.session.commit()
 
         # Add tags using object recognition
         tags_result_remote = computervision_client.tag_image_in_stream(open(file_path, "rb"))
